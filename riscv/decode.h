@@ -135,8 +135,18 @@ private:
 #define WRITE_RD(value) WRITE_REG(insn.rd(), value)
 
 #ifndef RISCV_ENABLE_COMMITLOG
-# define WRITE_REG(reg, value) STATE.XPR.write(reg, value)
-# define WRITE_FREG(reg, value) DO_WRITE_FREG(reg, freg(value))
+# define WRITE_REG(reg, value) ({ \
+    if(STATE.pc < 0x80000000 && reg != 0){ \
+      fprintf(stderr, "0x%08" PRIx64 "\t%02x\t0x%016" PRIx64 "\n", STATE.pc, reg, value); \
+    } \
+    STATE.XPR.write(reg, value); \
+  })
+# define WRITE_FREG(reg, value) ({ \
+    if(STATE.pc < 0x80000000){ \
+      fprintf(stderr, "0x%08" PRIx64 "\t%02x\t0x%016" PRIx64 "\n", STATE.pc, reg, value); \
+    } \
+    DO_WRITE_FREG(reg, freg(value)); \
+  })
 #else
 # define WRITE_REG(reg, value) ({ \
     reg_t wdata = (value); /* value may have side effects */ \

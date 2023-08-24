@@ -247,13 +247,13 @@ void processor_t::enter_debug_mode(uint8_t cause)
 
 void processor_t::take_trap(trap_t& t, reg_t epc)
 {
-  if (debug) {
-    fprintf(stderr, "core %3d: exception %s, epc 0x%016" PRIx64 "\n",
-            id, t.name(), epc);
-    if (t.has_tval())
-      fprintf(stderr, "core %3d:           tval 0x%016" PRIx64 "\n", id,
-          t.get_tval());
-  }
+  // if (debug) {
+  //   fprintf(stderr, "core %3d: exception %s, epc 0x%016" PRIx64 "\n",
+  //           id, t.name(), epc);
+  //   if (t.has_tval())
+  //     fprintf(stderr, "core %3d:           tval 0x%016" PRIx64 "\n", id,
+  //         t.get_tval());
+  // }
 
   if (state.dcsr.cause) {
     if (t.cause() == CAUSE_BREAKPOINT) {
@@ -314,9 +314,11 @@ void processor_t::disasm(insn_t insn)
     if (executions != 1) {
       fprintf(stderr, "core %3d: Executed %" PRIx64 " times\n", id, executions);
     }
-
-    fprintf(stderr, "core %3d: 0x%016" PRIx64 " (0x%08" PRIx64 ") %s\n",
-            id, state.pc, bits, disassembler->disassemble(insn).c_str());
+    // if(state.pc<0x80000000){
+    //   fprintf(stderr, "core %3d: 0x%016" PRIx64 " (0x%08" PRIx64 ") %s\n",
+    //         id, state.pc, bits, disassembler->disassemble(insn).c_str());
+    //   fprintf(stderr, "0x%08" PRIx64 "\t%d\t0x%016" PRIx64 "\n", state.pc, insn.rd(), state.XPR[insn.rd()]);
+    // }
     last_pc = state.pc;
     last_bits = bits;
     executions = 1;
