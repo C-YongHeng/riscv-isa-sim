@@ -94,6 +94,7 @@ int main(int argc, char** argv)
   bool debug = false;
   bool halted = false;
   bool histogram = false;
+  bool trace = false;
   bool log = false;
   bool dump_dts = false;
   bool dtb_enabled = true;
@@ -132,6 +133,7 @@ int main(int argc, char** argv)
   parser.option('h', "help", 0, [&](const char* s){help(0);});
   parser.option('d', 0, 0, [&](const char* s){debug = true;});
   parser.option('g', 0, 0, [&](const char* s){histogram = true;});
+  parser.option('t', 0, 0, [&](const char* s){trace = true;});
   parser.option('l', 0, 0, [&](const char* s){log = true;});
   parser.option('p', 0, 1, [&](const char* s){nprocs = atoi(s);});
   parser.option('m', 0, 1, [&](const char* s){mems = make_mems(s);});
@@ -204,5 +206,6 @@ int main(int argc, char** argv)
   s.set_debug(debug);
   s.set_log(log);
   s.set_histogram(histogram);
+  s.set_trace(trace);
   return s.run();
 }

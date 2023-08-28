@@ -137,6 +137,11 @@ void processor_t::set_debug(bool value)
     ext->set_debug(value);
 }
 
+void processor_t::set_trace(bool value)
+{
+  trace_enable = value;
+}
+
 void processor_t::set_histogram(bool value)
 {
   histogram_enabled = value;

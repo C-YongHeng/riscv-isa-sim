@@ -20,6 +20,7 @@
 #include "softfloat_types.h"
 #include "specialize.h"
 #include <cinttypes>
+#include <stdio.h>
 
 typedef int64_t sreg_t;
 typedef uint64_t reg_t;
@@ -112,10 +113,15 @@ template <class T, size_t N, bool zero_reg>
 class regfile_t
 {
 public:
-  void write(size_t i, T value)
+  void write(size_t i, T value, uint64_t pc, bool trace_enable)
   {
-    if (!zero_reg || i != 0)
+    if (!zero_reg || i != 0){
       data[i] = value;
+      if(trace_enable){
+        fprintf(stderr, "0x%08lx" "\t" "%02x" "\t" "0x%016lx" "\n", pc, (uint32_t)i, *(uint64_t*)&value); \
+      }
+
+    }
   }
   const T& operator [] (size_t i) const
   {
@@ -136,22 +142,16 @@ private:
 
 #ifndef RISCV_ENABLE_COMMITLOG
 # define WRITE_REG(reg, value) ({ \
-    if(STATE.pc < 0x80000000 && reg != 0){ \
-      fprintf(stderr, "0x%08" PRIx64 "\t%02x\t0x%016" PRIx64 "\n", STATE.pc, reg, value); \
-    } \
-    STATE.XPR.write(reg, value); \
+    STATE.XPR.write(reg, value, STATE.pc, p->trace_enable); \
   })
 # define WRITE_FREG(reg, value) ({ \
-    if(STATE.pc < 0x80000000){ \
-      fprintf(stderr, "0x%08" PRIx64 "\t%02x\t0x%016" PRIx64 "\n", STATE.pc, reg, value); \
-    } \
     DO_WRITE_FREG(reg, freg(value)); \
   })
 #else
 # define WRITE_REG(reg, value) ({ \
     reg_t wdata = (value); /* value may have side effects */ \
     STATE.log_reg_write = (commit_log_reg_t){(reg) << 1, {wdata, 0}}; \
-    STATE.XPR.write(reg, wdata); \
+    STATE.XPR.write(reg, wdata, STATE.pc, p->trace_enable); \
   })
 # define WRITE_FREG(reg, value) ({ \
     freg_t wdata = freg(value); /* value may have side effects */ \
@@ -178,7 +178,7 @@ private:
 #define FRS3 READ_FREG(insn.rs3())
 #define dirty_fp_state (STATE.mstatus |= MSTATUS_FS | (xlen == 64 ? MSTATUS64_SD : MSTATUS32_SD))
 #define dirty_ext_state (STATE.mstatus |= MSTATUS_XS | (xlen == 64 ? MSTATUS64_SD : MSTATUS32_SD))
-#define DO_WRITE_FREG(reg, value) (STATE.FPR.write(reg, value), dirty_fp_state)
+#define DO_WRITE_FREG(reg, value) (STATE.FPR.write(reg, value, STATE.pc, p->trace_enable), dirty_fp_state)
 #define WRITE_FRD(value) WRITE_FREG(insn.rd(), value)
  
 #define SHAMT (insn.i_imm() & 0x3F)
