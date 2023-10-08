@@ -33,7 +33,7 @@
     reg_t wdata = (value); /* value may have side effects */ \
     if (DECODE_MACRO_USAGE_LOGGED) STATE.log_reg_write[(reg) << 4] = {wdata, 0}; \
     CHECK_REG(reg); \
-    STATE.XPR.write(reg, wdata); \
+    STATE.XPR.write(reg, wdata, STATE.pc, p->trace_enable); \
   })
 #define WRITE_FREG(reg, value) ({ \
     freg_t wdata = freg(value); /* value may have side effects */ \
@@ -81,7 +81,7 @@
 #define dirty_fp_state  STATE.sstatus->dirty(SSTATUS_FS)
 #define dirty_ext_state STATE.sstatus->dirty(SSTATUS_XS)
 #define dirty_vs_state  STATE.sstatus->dirty(SSTATUS_VS)
-#define DO_WRITE_FREG(reg, value) (STATE.FPR.write(reg, value), dirty_fp_state)
+#define DO_WRITE_FREG(reg, value) (STATE.FPR.write(reg, value, STATE.pc, p->trace_enable), dirty_fp_state)
 #define WRITE_FRD(value) WRITE_FREG(insn.rd(), value)
 #define WRITE_FRD_H(value) \
 do { \

@@ -39,6 +39,7 @@ public:
   int run();
   void set_debug(bool value);
   void set_histogram(bool value);
+  void set_trace(bool value);
   void add_device(reg_t addr, std::shared_ptr<abstract_device_t> dev);
 
   // Configure logging
@@ -92,6 +93,7 @@ private:
   size_t current_proc;
   bool debug;
   bool histogram_enabled; // provide a histogram of PCs
+  bool trace_enable;
   bool log;
   remote_bitbang_t* remote_bitbang;
   std::optional<std::function<void()>> next_interactive_action;

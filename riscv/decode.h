@@ -14,6 +14,7 @@
 #include <strings.h>
 #include <cinttypes>
 #include <type_traits>
+#include <stdio.h>
 
 typedef int64_t sreg_t;
 typedef uint64_t reg_t;
@@ -206,10 +207,14 @@ template <class T, size_t N, bool zero_reg>
 class regfile_t
 {
 public:
-  void write(size_t i, T value)
+  void write(size_t i, T value, uint64_t pc, bool trace_enable)
   {
-    if (!zero_reg || i != 0)
+    if (!zero_reg || i != 0){
       data[i] = value;
+      if(trace_enable){
+        fprintf(stderr, "0x%08lx" "\t" "%02x" "\t" "0x%016lx" "\n", pc, (uint32_t)i, *(uint64_t*)&value);
+      }
+    }
   }
   const T& operator [] (size_t i) const
   {
