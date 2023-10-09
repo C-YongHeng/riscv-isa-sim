@@ -207,12 +207,12 @@ template <class T, size_t N, bool zero_reg>
 class regfile_t
 {
 public:
-  void write(size_t i, T value, uint64_t pc, bool trace_enable)
+  void write(size_t i, T value, uint64_t pc, bool trace_enable, uint32_t is_igpr)
   {
     if (!zero_reg || i != 0){
       data[i] = value;
       if(trace_enable){
-        fprintf(stderr, "0x%08lx" "\t" "%02x" "\t" "0x%016lx" "\n", pc, (uint32_t)i, *(uint64_t*)&value);
+        fprintf(stderr, "0x%08lx" "\t" "%03x" "\t" "0x%016lx" "\n", pc, (uint32_t)i + (is_igpr << 8), *(uint64_t*)&value);
       }
     }
   }
