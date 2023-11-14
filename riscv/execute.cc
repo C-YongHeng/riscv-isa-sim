@@ -140,13 +140,19 @@ static void commit_log_print_insn(processor_t *p, reg_t pc, insn_t insn)
   for (auto item : load) {
     fprintf(log_file, " mem ");
     commit_log_print_value(log_file, xlen, std::get<0>(item));
+    fprintf(log_file, " (");
+    commit_log_print_value(log_file, xlen, std::get<1>(item));
+    fprintf(log_file, ")");
   }
 
   for (auto item : store) {
     fprintf(log_file, " mem ");
     commit_log_print_value(log_file, xlen, std::get<0>(item));
+    fprintf(log_file, " (");
+    commit_log_print_value(log_file, xlen, std::get<1>(item));
+    fprintf(log_file, ")");
     fprintf(log_file, " ");
-    commit_log_print_value(log_file, std::get<2>(item) << 3, std::get<1>(item));
+    commit_log_print_value(log_file, std::get<3>(item) << 3, std::get<2>(item));
   }
   fprintf(log_file, "\n");
 }
